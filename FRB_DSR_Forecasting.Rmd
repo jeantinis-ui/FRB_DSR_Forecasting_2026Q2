@@ -1,0 +1,94 @@
+---
+title: "FRB_DSR_Forecast"
+author: "Jean Tini"
+date: "2026-10-07"
+output: html_document
+---
+
+```{r setup}
+# Loading  data
+FRB_DSR <- read.csv("C:/Users/jeant/Downloads/FRB_DSR.csv") 
+
+library(fpp2)
+
+str(FRB_DSR)
+
+##
+
+attributes(FRB_DSR)
+
+plot(FRB_DSR)
+##
+myTimeSeries <- ts(FRB_DSR$DSR_RATIO)
+plot(myTimeSeries)
+
+##
+Acf(myTimeSeries)
+
+## take Mean of all available observation
+mean_forecast <- meanf(myTimeSeries, 5)
+plot(mean_forecast)
+
+## Naive
+naive_forecast <- naive(myTimeSeries)
+plot(naive_forecast)
+
+##
+snaive_forecast <- snaive(myTimeSeries)
+plot(snaive_forecast)
+
+## Random walk
+rwf_forecast <- rwf(myTimeSeries,5)
+rwf_forecast <- rwf(myTimeSeries,5, drift = TRUE)
+
+## Moving averages
+MA5_forecast <- ma(myTimeSeries,order = 5)
+MA9_forecast <- ma(myTimeSeries,order = 9)
+
+## Plot all in a single chart
+plot(mean_forecast)
+lines(naive_forecast$mean, col="red")
+lines(rwf_forecast$mean,col="green")
+lines(snaive_forecast$mean, col="black")
+lines(MA5_forecast, col="Pink")
+lines(MA9_forecast,col="Blue")
+
+## What other attributes are there
+attributes(naive_forecast)
+
+## Decomposition
+ets_forecast <- ets(myTimeSeries)
+plot(ets_forecast)
+
+## 
+attributes(ets_forecast)
+
+##
+ets_forecast$amse
+
+## HoltWinters
+
+## 
+SSE_Simple <- HoltWinters(myTimeSeries,beta = FALSE,gamma = FALSE)
+attributes(SSE_Simple)
+
+## 
+plot(SSE_Simple)
+
+##
+SSE_Simple$SSE
+
+##
+head(SSE_Simple$fitted)
+
+## Forecast
+forecast_ets_1 <- forecast.ets(ets_forecast, h=5)
+plot(forecast_ets_1)
+
+##
+forecast_ets_2 <- forecast(ets_forecast, h=5)
+plot(forecast_ets_2)
+
+
+```
+
